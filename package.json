@@ -1,0 +1,8 @@
+{
+  "name": "fairOS-js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:fairDataSociety/fairOS-js.git",
+  "author": "Igor Shadurin <igor.shadurin@gmail.com>",
+  "license": "MIT"
+}
