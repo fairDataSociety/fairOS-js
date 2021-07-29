@@ -5,7 +5,11 @@ import axios from "axios";
 // todo self-documented code with possibility to create docs page
 
 export default class FairOS {
-    baseURL = 'https://fairos.fairdatasociety.org/v1/';
+    baseURL;
+
+    constructor(baseURL = 'http://localhost:9090/v1/') {
+        this.baseURL = baseURL;
+    }
 
     get(apiMethod, data = {}) {
         return axios({
@@ -33,7 +37,7 @@ export default class FairOS {
         });
     }
 
-    login(username, password) {
+    userLogin(username, password) {
         return this.post('user/login', {
             user_name: username,
             password: password,
