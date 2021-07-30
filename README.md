@@ -13,3 +13,17 @@ Testing required spun up FairOS and Bee node with possibility to clear data befo
 2 - Run
 
 `yarn test`
+
+### Test nodes
+
+sudo docker run \
+-v /home/pi/api-test/bee-docker-data:/home/bee/.bee \
+-p 1635:1635 \
+-p 1634:1634 \
+-p 1633:1633 \
+--rm -it ethersphere/bee:0.6.2 \
+start \
+--password=IKGV7tyf76F \
+--cache-capacity 3000000 \
+--swap-endpoint https://goerli.infura.io/v3/357ce0ddb3ef426ba0bc727a3c64c873 \
+--debug-api-enable
