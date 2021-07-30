@@ -7,6 +7,8 @@ services:
       - BEE_BOOTNODE=/dnsaddr/testnet.ethswarm.org
       - BEE_CLEF_SIGNER_ENABLE=false
       - BEE_CACHE_CAPACITY=3000000
+      - BEE_PASSWORD=IKGV7tyf76F
+      - BEE_STANDALONE=true
       - BEE_SWAP_ENDPOINT=https://goerli.infura.io/v3/d6b35821fc8642029a0ecf34b116ab30
     ports:
       - "${API_ADDR:-1633}${BEE_API_ADDR:-:1633}"
