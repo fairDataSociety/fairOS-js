@@ -32,6 +32,15 @@ start \
 --debug-api-enable
 ```
 
-Create postage stamps and fill it to docker-compose.yml, then run
+Withdraw 0.1 gBzz from chequbook
+
+`curl -XPOST "http://localhost:1635/chequebook/withdraw?amount=1000000000000000"`
+
+Create stamps
+
+`curl -s -XPOST http://localhost:1633/stamps/10000000/20`
+
+
+Fill it to docker-compose.yml, then run
 
 `docker-compose down && docker-compose up -d`

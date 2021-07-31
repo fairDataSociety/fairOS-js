@@ -1,4 +1,5 @@
 const {api, fakeUsers} = require('./utils');
+const FairOS = require('../fairos.min');
 
 test('Test', () => {
     expect(api.test()).toBe('FairOS test OK');
@@ -16,7 +17,15 @@ test('Register admin user with mnemonic', async () => {
     const user = fakeUsers.admin;
 
     const data = (await api.userSignup(user.username, user.password, user.mnemonic)).data;
-    expect(data.address).toEqual('0xB99f13a77Ae04d27a41bEF2265ffd75E83C91147');
+    expect(data.address).toEqual(user.address);
+});
+
+test('Admin exists check again', async () => {
+    const user = fakeUsers.admin;
+
+    const data = (await api.userPresent(user.username)).data;
+    expect(data.present).toBeDefined();
+    expect(data.present).toBe(true);
 });
 
 test('Register admin user with mnemonic again', async () => {
@@ -24,8 +33,7 @@ test('Register admin user with mnemonic again', async () => {
 
     expect.assertions(2);
     try {
-        const data = (await api.userSignup(user.username, user.password, user.mnemonic)).data;
-        console.log(data);
+        await api.userSignup(user.username, user.password, user.mnemonic);
     } catch (e) {
         const data = e.response.data;
 
@@ -41,3 +49,17 @@ test('Login', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 });
+
+test('Check is logged in with no auth client', async () => {
+    const user = fakeUsers.admin;
+
+    const data = (await api.userIsLoggedIn(user.username)).data;
+    console.log('data',data);
+    expect(data.loggedin).toBe(false);
+});
+
+// test('Check is logged in with store cookie mode', async () => {
+//     const storeApi = new FairOS(api.);
+//     const data = (await api.userIsLoggedIn()).data;
+//     expect(data.loggedin).toBe(false);
+// });

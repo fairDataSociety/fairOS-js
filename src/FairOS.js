@@ -85,10 +85,37 @@ POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:909
  */
 
 export default class FairOS {
-    baseURL;
+    isNode = typeof window === 'undefined';
 
-    constructor(baseURL = 'http://localhost:9090/v1/') {
+    baseURL;
+    cookie = '';
+    isStoreNodeCookie;
+
+    constructor(baseURL = 'http://localhost:9090/v1/', isStoreNodeCookie = true) {
         this.baseURL = baseURL;
+        this.isStoreNodeCookie = isStoreNodeCookie;
+    }
+
+    setNodeCookie(cookie = '') {
+        this.cookie = cookie;
+    }
+
+    setIsStoreNewCookie(isStoreNodeCookie) {
+        this.isStoreNodeCookie = isStoreNodeCookie;
+    }
+
+    handleCookies(response) {
+        if (this.isNode && this.isStoreNodeCookie) {
+            let receivedCookie = response.headers['set-cookie'];
+            if (receivedCookie && receivedCookie.length) {
+                receivedCookie = receivedCookie[0].split(';');
+                if (receivedCookie && receivedCookie.length) {
+                    this.cookie = receivedCookie[0];
+                }
+            }
+        }
+
+        return response;
     }
 
     get(apiMethod, data = {}) {
@@ -99,9 +126,10 @@ export default class FairOS {
             data,
             headers: {
                 'Content-Type': 'application/json',
+                'Cookie': this.cookie
             },
             withCredentials: true,
-        });
+        }).then(response => this.handleCookies(response));
     }
 
     post(apiMethod, data = {}) {
@@ -112,9 +140,10 @@ export default class FairOS {
             data,
             headers: {
                 'Content-Type': 'application/json',
+                'Cookie': this.cookie
             },
             withCredentials: true,
-        });
+        }).then(response => this.handleCookies(response));
     }
 
     userLogin(username, password) {
