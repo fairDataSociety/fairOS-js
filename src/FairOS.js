@@ -6,15 +6,9 @@ import axios from "axios";
 
 /*
 
-POST http://localhost:9090/v0/user/avatar
-POST -F 'first_name=\<firstName>' -F 'middle_name=\<middleName>' -F 'last_name=\<lastName>' -F 'surname=\<surName>' http://localhost:9090/v0/user/name
-POST -F 'phone=\<phone>' -F 'mobile=\<mobile>' -F 'address_line_1=\<address1>' -F 'address_line_2=\<address2>' http://localhost:9090/v0/user/contact
 POST http://localhost:9090/v0/user/export
 DELETE -F 'password=\<password>' http://localhost:9090/v0/user/delete
 GET http://localhost:9090/v0/user/stat
-GET http://localhost:9090/v0/user/avatar
-GET http://localhost:9090/v0/user/name
-GET http://localhost:9090/v0/user/contact
 GET http://localhost:9090/v0/user/share/inbox
 GET http://localhost:9090/v0/user/share/outbox
  */
@@ -174,6 +168,10 @@ export default class FairOS {
 
     userLogout() {
         return this.post('user/logout');
+    }
+
+    userStat() {
+        return this.get('user/stat');
     }
 
     podLs() {
