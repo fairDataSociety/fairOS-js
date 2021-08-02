@@ -4,8 +4,7 @@ import axios from "axios";
 // todo self-documented code with possibility to create docs page
 
 /*
-POST -F 'password=\<password>' -F 'pod=\<podname>' http://localhost:9090/v0/pod/open
-POST http://localhost:9090/v0/pod/sync
+
 POST http://localhost:9090/v0/pod/close
 DELETE http://localhost:9090/v0/pod/delete
 GET http://localhost:9090/v0/pod/ls
@@ -202,6 +201,31 @@ export default class FairOS {
         return this.post('pod/open', {
             pod_name: podName,
             password
+        });
+    }
+
+    podSync(podName) {
+        return this.post('pod/sync',{
+            pod_name: podName
+        });
+    }
+
+    podClose() {
+        return this.post('pod/close');
+    }
+
+    podDelete() {
+        return this.delete('pod/delete');
+    }
+
+    podLs() {
+        return this.get('pod/ls');
+    }
+
+    podStat(podName, username) {
+        return this.post('pod/stat', {
+            pod_name: podName,
+            user: username
         });
     }
 

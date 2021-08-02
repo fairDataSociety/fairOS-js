@@ -1,16 +1,16 @@
 const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser} = require("../utils");
 
-test('User create new pod', async () => {
+test('Pod sync', async () => {
     // const user = getRandomUser();
     // const podName = getRandomPodName();
     const user = fakeUsers.podUser;
     const podName = fakeUsers.podUser.podName;
-    const randomPodName = getRandomPodName();
+    // const randomPodName = getRandomPodName();
 
     let data;
 
     try {
-        await apiNoAuth.podOpen(podName, user.password);
+        await apiNoAuth.podSync(podName);
         expect(true).toBe(false);
     } catch (e) {
         const data = e.response.data;
@@ -22,6 +22,15 @@ test('User create new pod', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 
+    data = (await apiAuth.podOpen(podName, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('pod opened successfully');
+
+    data = (await apiAuth.podSync(podName)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('pod synced successfully');
+
+    return;
     try {
         await apiAuth.podOpen(randomPodName, user.password);
         expect(true).toBe(false);
