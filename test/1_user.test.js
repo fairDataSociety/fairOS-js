@@ -1,4 +1,4 @@
-const {apiNoAuth, fakeUsers} = require('./utils');
+const {apiNoAuth, fakeUsers, apiAuth} = require('./utils');
 const FairOS = require('../fairos.min');
 
 test('Test', () => {
@@ -58,4 +58,27 @@ test('Import user with mnemonic', async () => {
 
     data = (await apiNoAuth.userImport(user.username, user.password, user.mnemonic)).data;
     expect(data.address).toEqual(user.address);
+});
+
+test('User logout', async () => {
+    const user = fakeUsers.admin;
+
+    expect.assertions(6);
+
+    let data;
+    try {
+        await apiNoAuth.userLogout();
+    } catch (e) {
+        const data = e.response.data;
+        expect(data.code).toBe(400);
+        expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+    }
+
+    data = (await apiAuth.userLogin(user.username, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('user logged-in successfully');
+
+    data = (await apiAuth.userLogout()).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('used logged out successfully');
 });

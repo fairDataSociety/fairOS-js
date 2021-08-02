@@ -5,7 +5,7 @@ import axios from "axios";
 
 
 /*
-POST http://localhost:9090/v0/user/logout
+
 POST http://localhost:9090/v0/user/avatar
 POST -F 'first_name=\<firstName>' -F 'middle_name=\<middleName>' -F 'last_name=\<lastName>' -F 'surname=\<surName>' http://localhost:9090/v0/user/name
 POST -F 'phone=\<phone>' -F 'mobile=\<mobile>' -F 'address_line_1=\<address1>' -F 'address_line_2=\<address2>' http://localhost:9090/v0/user/contact
@@ -170,6 +170,10 @@ export default class FairOS {
 
     userIsLoggedIn(username) {
         return this.get(`user/isloggedin?user_name=${username}`);
+    }
+
+    userLogout() {
+        return this.post('user/logout');
     }
 
     podLs() {
