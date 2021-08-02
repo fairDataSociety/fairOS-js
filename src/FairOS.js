@@ -5,7 +5,6 @@ import axios from "axios";
 
 /*
 
-POST http://localhost:9090/v0/pod/close
 DELETE http://localhost:9090/v0/pod/delete
 GET http://localhost:9090/v0/pod/ls
 GET -F 'user=\<username>' -F 'pod=\<podname>' http://localhost:9090/v0/pod/stat
@@ -205,17 +204,21 @@ export default class FairOS {
     }
 
     podSync(podName) {
-        return this.post('pod/sync',{
+        return this.post('pod/sync', {
             pod_name: podName
         });
     }
 
-    podClose() {
-        return this.post('pod/close');
+    podClose(podName) {
+        return this.post('pod/close', {
+            pod_name: podName
+        });
     }
 
-    podDelete() {
-        return this.delete('pod/delete');
+    podDelete(podName) {
+        return this.delete('pod/delete',{
+            pod_name: podName
+        });
     }
 
     podLs() {
