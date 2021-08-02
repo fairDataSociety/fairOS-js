@@ -1,6 +1,6 @@
 const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser} = require("../utils");
 
-test('Pod close', async () => {
+test('Pod ls', async () => {
     // const user = getRandomUser();
     // const podName = getRandomPodName();
     const user = fakeUsers.podUser;
@@ -9,7 +9,7 @@ test('Pod close', async () => {
 
     let data;
     try {
-        await apiNoAuth.podClose(podName);
+        await apiNoAuth.podLs();
         expect(true).toBe(false);
     } catch (e) {
         const data = e.response.data;
@@ -21,14 +21,19 @@ test('Pod close', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 
-    data = (await apiAuth.podOpen(podName, user.password)).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('pod opened successfully');
+    // data = (await apiAuth.podOpen(podName, user.password)).data;
+    // expect(data.code).toBe(200);
+    // expect(data.message).toBe('pod opened successfully');
 
-    data = (await apiAuth.podClose(podName)).data;
-    // console.log('data',data);
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('pod closed successfully');
+    // data = (await apiAuth.podClose(podName)).data;
+    // // console.log('data',data);
+    // expect(data.code).toBe(200);
+    // expect(data.message).toBe('pod closed successfully');
+
+    data = (await apiAuth.podLs()).data;
+    expect(data.pod_name).toEqual([podName]);
+    expect(data.shared_pod_name).toEqual([]);
+    // expect(data.message).toBe('pod closed successfully');
 
     return;
     try {

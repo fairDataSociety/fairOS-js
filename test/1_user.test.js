@@ -274,3 +274,26 @@ test('Pod close', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('pod closed successfully');
 });
+
+test('Pod ls', async () => {
+    const user = fakeUsers.podUser;
+    const podName = fakeUsers.podUser.podName;
+
+    let data;
+    try {
+        await apiNoAuth.podLs();
+        expect(true).toBe(false);
+    } catch (e) {
+        const data = e.response.data;
+        expect(data.code).toBe(400);
+        expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+    }
+
+    data = (await apiAuth.userLogin(user.username, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('user logged-in successfully');
+
+    data = (await apiAuth.podLs()).data;
+    expect(data.pod_name).toEqual([podName]);
+    expect(data.shared_pod_name).toEqual([]);
+});
