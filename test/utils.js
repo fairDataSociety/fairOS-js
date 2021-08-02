@@ -33,8 +33,8 @@ module.exports.fakeUsers = {
     podUser: {
         username: 'poduser',
         password: 'somepasswordpoduser',
-        mnemonic: 'balance illness divert chest axis genius hold aerobic category maximum lesson master',
-        address: '0x3e87CaD9f580ec6eDf3472436a703Db23d85e76F',
+        mnemonic: 'harvest wealth text swap aerobic once spirit other bacon assault odor oxygen',
+        address: '0x946902a0E525905FbD447c0E13ba6a2179af8712',
         podName: 'Hello-world'
     },
 };

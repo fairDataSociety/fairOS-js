@@ -1,6 +1,6 @@
 const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser} = require("../utils");
 
-test('Pod ls', async () => {
+test('Pod delete', async () => {
     // const user = getRandomUser();
     // const podName = getRandomPodName();
     const user = fakeUsers.podUser;
@@ -9,7 +9,7 @@ test('Pod ls', async () => {
 
     let data;
     try {
-        await apiNoAuth.podLs();
+        await apiNoAuth.podDelete(podName);
         expect(true).toBe(false);
     } catch (e) {
         const data = e.response.data;
@@ -21,6 +21,17 @@ test('Pod ls', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 
+    try {
+        data = (await apiAuth.podDelete(podName)).data;
+        expect(true).toBe(false);
+        console.log('data',data);
+    } catch (e) {
+        const data = e.response.data;
+        console.log('e data',data);
+        // expect(data.code).toBe(400);
+        // expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+    }
+return
     // data = (await apiAuth.podOpen(podName, user.password)).data;
     // expect(data.code).toBe(200);
     // expect(data.message).toBe('pod opened successfully');
