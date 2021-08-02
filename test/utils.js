@@ -23,7 +23,13 @@ module.exports.fakeUsers = {
         password: 'somepassword2',
         mnemonic: 'tilt sorry ensure gravity exile disease double fever swap impact degree flight',
         address: '0xCe4Fae0ccd79e7337233Aa146aCB303FD1A46250'
-    }
+    },
+    delete: {
+        username: 'todelete',
+        password: 'somepasswordtodelete',
+        mnemonic: 'sausage onion camp kid genius ripple crash fold win system music fun',
+        address: '0x28340d5bD212A58f6a1F32022CC775499271826a'
+    },
 };
 
 module.exports.uuid = () => {

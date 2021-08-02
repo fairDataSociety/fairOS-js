@@ -5,8 +5,6 @@ import axios from "axios";
 
 
 /*
-
-DELETE -F 'password=\<password>' http://localhost:9090/v0/user/delete
 GET http://localhost:9090/v0/user/share/inbox
 GET http://localhost:9090/v0/user/share/outbox
  */
@@ -128,6 +126,20 @@ export default class FairOS {
         }).then(response => this.handleCookies(response));
     }
 
+    delete(apiMethod, data = {}) {
+        return axios({
+            baseURL: this.baseURL,
+            url: apiMethod,
+            method: 'DELETE',
+            data,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cookie': this.cookie
+            },
+            withCredentials: true,
+        }).then(response => this.handleCookies(response));
+    }
+
     userLogin(username, password) {
         return this.post('user/login', {
             user_name: username,
@@ -176,6 +188,12 @@ export default class FairOS {
         return this.get('user/stat');
     }
 
+    userDelete(password) {
+        return this.delete('user/delete', {
+            password
+        });
+    }
+
     podLs() {
         return this.get('pod/ls');
     }
@@ -184,5 +202,3 @@ export default class FairOS {
         return 'FairOS test OK';
     }
 }
-
-

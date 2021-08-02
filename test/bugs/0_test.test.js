@@ -1,27 +1,37 @@
 const {fakeUsers, apiAuth, apiNoAuth} = require("../utils");
 
-test('User export', async () => {
-    const user = fakeUsers.admin;
+test('User delete', async () => {
+    const user = fakeUsers.delete;
 
-    expect.assertions(6);
+    expect.assertions(10);
+    let data;
     try {
-        await apiNoAuth.userExport();
+        await apiNoAuth.userDelete(user.password);
     } catch (e) {
         const data = e.response.data;
-        console.log('data',data);
-
+        console.log('data', data);
         expect(data.code).toBe(400);
-        // expect(data.message).toBe('cookie: invalid cookie: securecookie: the value is not valid');
-        // also could be
         expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
     }
 
-    let data = (await apiAuth.userLogin(user.username, user.password)).data;
+    data = (await apiNoAuth.userPresent(user.username)).data;
+    expect(data.present).toBe(false);
+
+    data = (await apiNoAuth.userSignup(user.username, user.password, user.mnemonic)).data;
+    expect(data.address).toEqual(user.address);
+
+    data = (await apiNoAuth.userPresent(user.username)).data;
+    expect(data.present).toBe(true);
+
+    data = (await apiAuth.userLogin(user.username, user.password)).data;
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 
-    data = (await apiAuth.userExport()).data;
-    console.log('data',data);
-    expect(data.user_name).toBe(user.username);
-    expect(data.address).toBe(user.address);
+
+    data = (await apiAuth.userDelete(user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('user deleted successfully');
+
+    data = (await apiNoAuth.userPresent(user.username)).data;
+    expect(data.present).toBe(false);
 });
