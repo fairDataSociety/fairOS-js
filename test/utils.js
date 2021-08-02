@@ -30,6 +30,13 @@ module.exports.fakeUsers = {
         mnemonic: 'sausage onion camp kid genius ripple crash fold win system music fun',
         address: '0x28340d5bD212A58f6a1F32022CC775499271826a'
     },
+    podUser: {
+        username: 'poduser',
+        password: 'somepasswordpoduser',
+        mnemonic: 'balance illness divert chest axis genius hold aerobic category maximum lesson master',
+        address: '0x3e87CaD9f580ec6eDf3472436a703Db23d85e76F',
+        podName: 'Hello-world'
+    },
 };
 
 module.exports.uuid = () => {
@@ -45,4 +52,15 @@ module.exports.getRandomUsername = () => {
 
 module.exports.getRandomPassword = () => {
     return module.exports.uuid();
+};
+
+module.exports.getRandomPodName = () => {
+    return module.exports.uuid();
+};
+
+module.exports.getRandomUser = () => {
+    return {
+        username: module.exports.uuid(),
+        password: module.exports.uuid()
+    };
 };

@@ -1,37 +1,31 @@
-const {fakeUsers, apiAuth, apiNoAuth} = require("../utils");
+const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser} = require("../utils");
 
-test('User delete', async () => {
-    const user = fakeUsers.delete;
+test('User create new pod', async () => {
+    // const user = getRandomUser();
+    // const podName = getRandomPodName();
+    const user = fakeUsers.podUser;
+    const podName = fakeUsers.podUser.podName;
 
-    expect.assertions(10);
-    let data;
-    try {
-        await apiNoAuth.userDelete(user.password);
-    } catch (e) {
-        const data = e.response.data;
-        console.log('data', data);
-        expect(data.code).toBe(400);
-        expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
-    }
+    await apiNoAuth.userSignup(user.username, user.password);
 
-    data = (await apiNoAuth.userPresent(user.username)).data;
-    expect(data.present).toBe(false);
-
-    data = (await apiNoAuth.userSignup(user.username, user.password, user.mnemonic)).data;
-    expect(data.address).toEqual(user.address);
-
-    data = (await apiNoAuth.userPresent(user.username)).data;
-    expect(data.present).toBe(true);
-
-    data = (await apiAuth.userLogin(user.username, user.password)).data;
+    let data = (await apiAuth.userLogin(user.username, user.password)).data;
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 
+    data = (await apiAuth.podNew(podName, user.password)).data;
+    expect(data.code).toBe(201);
+    expect(data.message).toBe('pod created successfully');
 
-    data = (await apiAuth.userDelete(user.password)).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('user deleted successfully');
+    try {
+        await apiAuth.podNew(podName, user.password);
+        expect(true).toBe(false);
+    } catch (e) {
+        const data = e.response.data;
+        expect(data.code).toBe(400);
+        expect(data.message).toBe('pod new: pod already exists');
+    }
 
-    data = (await apiNoAuth.userPresent(user.username)).data;
-    expect(data.present).toBe(false);
+    // console.log('111data', data);
+    // expect(data.code).toBe(201);
+    // expect(data.message).toBe('pod created successfully');
 });

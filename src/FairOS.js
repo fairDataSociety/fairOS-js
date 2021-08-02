@@ -3,14 +3,7 @@ import axios from "axios";
 // todo supported platforms: browser, node, react, react native
 // todo self-documented code with possibility to create docs page
 
-
 /*
-GET http://localhost:9090/v0/user/share/inbox
-GET http://localhost:9090/v0/user/share/outbox
- */
-
-/*
-POST -F 'password=\<password>' -F 'pod=\<podname>' http://localhost:9090/v0/pod/new
 POST -F 'password=\<password>' -F 'pod=\<podname>' http://localhost:9090/v0/pod/open
 POST http://localhost:9090/v0/pod/sync
 POST http://localhost:9090/v0/pod/close
@@ -196,6 +189,20 @@ export default class FairOS {
 
     podLs() {
         return this.get('pod/ls');
+    }
+
+    podNew(podName, password) {
+        return this.post('pod/new', {
+            pod_name: podName,
+            password
+        });
+    }
+
+    podOpen(podName, password) {
+        return this.post('pod/open', {
+            pod_name: podName,
+            password
+        });
     }
 
     test() {
