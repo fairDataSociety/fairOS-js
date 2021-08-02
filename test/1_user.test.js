@@ -49,9 +49,3 @@ test('Login', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 });
-
-// test('Check is logged in with store cookie mode', async () => {
-//     const storeApi = new FairOS(api.);
-//     const data = (await api.userIsLoggedIn()).data;
-//     expect(data.loggedin).toBe(false);
-// });

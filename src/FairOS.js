@@ -1,18 +1,12 @@
 import axios from "axios";
-// todo progress support
+// todo progress upload/download support
 // todo supported platforms: browser, node, react, react native
-// todo how to init?
 // todo self-documented code with possibility to create docs page
 
 /*
-OK POST -F 'user=\<username>' -F 'password=\<password>' -F 'mnemonic=<12 words from bip39 list>' http://localhost:9090/v0/user/signup
-OK POST -F 'user=\<username>' -F 'password=\<password>' http://localhost:9090/v0/user/signup
-OK POST -F 'user=\<username>' -F 'password=\<password>' http://localhost:9090/v0/user/login
 OK POST -F 'user=\<username>' -F 'address=\<user_address>' -F 'password=\<password>' http://localhost:9090/v0/user/import
 OK POST -F 'user=\<username>' -F 'mnemonic=\<12_word_mnemonic>' -F 'password=\<password>' http://localhost:9090/v0/user/import
-OK GET -F 'user=\<username>' http://localhost:9090/v0/user/present
-OK GET -F 'user=\<username>' http://localhost:9090/v0/user/isloggedin
- */
+*/
 
 /*
 POST http://localhost:9090/v0/user/logout
