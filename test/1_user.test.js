@@ -88,13 +88,13 @@ test('User stat', async () => {
 
     expect.assertions(6);
     try {
-        await apiAuth.userStat();
+        await apiNoAuth.userStat();
     } catch (e) {
         const data = e.response.data;
         expect(data.code).toBe(400);
-        expect(data.message).toBe('cookie: invalid cookie: securecookie: the value is not valid');
+        // expect(data.message).toBe('cookie: invalid cookie: securecookie: the value is not valid');
         // also could be
-        // expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+        expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
     }
 
     let data = (await apiAuth.userLogin(user.username, user.password)).data;
@@ -104,4 +104,26 @@ test('User stat', async () => {
     data = (await apiAuth.userStat()).data;
     expect(data.user_name).toBe(user.username);
     expect(data.reference).toBe(user.address);
+});
+
+test('User export', async () => {
+    const user = fakeUsers.admin;
+
+    expect.assertions(6);
+    try {
+        await apiNoAuth.userExport();
+    } catch (e) {
+        const data = e.response.data;
+        expect(data.code).toBe(400);
+        // also could be
+        expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+    }
+
+    let data = (await apiAuth.userLogin(user.username, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('user logged-in successfully');
+
+    data = (await apiAuth.userExport()).data;
+    expect(data.user_name).toBe(user.username);
+    expect(data.address).toBe(user.address);
 });

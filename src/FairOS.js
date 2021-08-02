@@ -6,9 +6,7 @@ import axios from "axios";
 
 /*
 
-POST http://localhost:9090/v0/user/export
 DELETE -F 'password=\<password>' http://localhost:9090/v0/user/delete
-GET http://localhost:9090/v0/user/stat
 GET http://localhost:9090/v0/user/share/inbox
 GET http://localhost:9090/v0/user/share/outbox
  */
@@ -168,6 +166,10 @@ export default class FairOS {
 
     userLogout() {
         return this.post('user/logout');
+    }
+
+    userExport() {
+        return this.post('user/export');
     }
 
     userStat() {
