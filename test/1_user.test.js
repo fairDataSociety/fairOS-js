@@ -49,3 +49,13 @@ test('Login', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 });
+
+test('Import user with mnemonic', async () => {
+    const user = fakeUsers.toImport;
+
+    let data = (await apiNoAuth.userPresent(user.username)).data;
+    expect(data.present).toBe(false);
+
+    data = (await apiNoAuth.userImport(user.username, user.password, user.mnemonic)).data;
+    expect(data.address).toEqual(user.address);
+});

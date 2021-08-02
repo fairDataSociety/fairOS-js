@@ -3,10 +3,6 @@ import axios from "axios";
 // todo supported platforms: browser, node, react, react native
 // todo self-documented code with possibility to create docs page
 
-/*
-OK POST -F 'user=\<username>' -F 'address=\<user_address>' -F 'password=\<password>' http://localhost:9090/v0/user/import
-OK POST -F 'user=\<username>' -F 'mnemonic=\<12_word_mnemonic>' -F 'password=\<password>' http://localhost:9090/v0/user/import
-*/
 
 /*
 POST http://localhost:9090/v0/user/logout
