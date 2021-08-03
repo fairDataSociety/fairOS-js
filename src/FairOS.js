@@ -171,10 +171,6 @@ export default class FairOS {
         });
     }
 
-    podLs() {
-        return this.get('pod/ls');
-    }
-
     podNew(podName, password) {
         return this.post('pod/new', {
             pod_name: podName,
