@@ -4,13 +4,6 @@ import axios from "axios";
 // todo self-documented code with possibility to create docs page
 
 /*
-
-DELETE http://localhost:9090/v0/pod/delete
-GET http://localhost:9090/v0/pod/ls
-GET -F 'user=\<username>' -F 'pod=\<podname>' http://localhost:9090/v0/pod/stat
- */
-
-/*
 POST -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/mkdir
 DELETE -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/rmdir
 GET -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/ls
@@ -216,7 +209,7 @@ export default class FairOS {
     }
 
     podDelete(podName) {
-        return this.delete('pod/delete',{
+        return this.delete('pod/delete', {
             pod_name: podName
         });
     }
@@ -225,11 +218,8 @@ export default class FairOS {
         return this.get('pod/ls');
     }
 
-    podStat(podName, username) {
-        return this.post('pod/stat', {
-            pod_name: podName,
-            user: username
-        });
+    podStat(podName) {
+        return this.get(`pod/stat?pod_name=${podName}`);
     }
 
     test() {

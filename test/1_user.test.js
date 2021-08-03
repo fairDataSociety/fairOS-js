@@ -297,3 +297,20 @@ test('Pod ls', async () => {
     expect(data.pod_name).toEqual([podName]);
     expect(data.shared_pod_name).toEqual([]);
 });
+
+test('Pod stat', async () => {
+    const user = fakeUsers.podUser;
+    const podName = fakeUsers.podUser.podName;
+
+    let data = (await apiAuth.userLogin(user.username, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('user logged-in successfully');
+
+    data = (await apiAuth.podOpen(podName, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('pod opened successfully');
+
+    data = (await apiAuth.podStat(podName)).data;
+    expect(data.pod_name).toBe(podName);
+    expect(data.address).toHaveLength(40);
+});
