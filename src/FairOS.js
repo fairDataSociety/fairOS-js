@@ -4,13 +4,6 @@ import axios from "axios";
 // todo self-documented code with possibility to create docs page
 
 /*
-POST -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/mkdir
-DELETE -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/rmdir
-GET -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/ls
-GET -F 'dir=\<dir_with_path>' http://localhost:9090/v0/dir/stat
- */
-
-/*
 POST -F -H "fairOS-dfs-Compression: snappy/gzip" 'pod_dir=\<dir_with_path>' -F 'block_size=\<in_Mb>' -F 'files=@\<filename1>' -F 'files=@\<filename2>' http://localhost:9090/v0/file/upload (compression header optional)
 POST -F 'file=\<file_path>' http://localhost:9090/v0/file/download
 POST -F 'file=\<file_path>' -F 'to=\<destination_user_address>' http://localhost:9090/v0/file/share
@@ -220,6 +213,28 @@ export default class FairOS {
 
     podStat(podName) {
         return this.get(`pod/stat?pod_name=${podName}`);
+    }
+
+    dirMkdir(podName, dirFullPath) {
+        return this.post('dir/mkdir', {
+            dir_path: dirFullPath,
+            pod_name: podName
+        });
+    }
+
+    dirRmdir(podName, dirFullPath) {
+        return this.delete('dir/rmdir', {
+            dir_path: dirFullPath,
+            pod_name: podName
+        });
+    }
+
+    dirLs(podName, dirFullPath = '/') {
+        return this.get(`dir/ls?pod_name=${podName}&dir_path=${dirFullPath}`);
+    }
+
+    dirStat(podName, dir, dirFullPath) {
+        return this.get(`dir/stat?dir=${dir}&pod_name=${podName}&dir_path=${dirFullPath}`);
     }
 
     test() {

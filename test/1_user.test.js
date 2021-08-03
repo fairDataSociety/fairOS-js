@@ -324,3 +324,54 @@ test('Pod stat', async () => {
     expect(data.pod_name).toBe(podName);
     expect(data.address).toHaveLength(40);
 });
+
+test('Dir CRUD', async () => {
+    const user = fakeUsers.dirUser;
+    const podName = fakeUsers.dirUser.podName;
+    const dirName = fakeUsers.dirUser.dirName;
+    const dirFullPath = fakeUsers.dirUser.dirFullPath;
+
+    await apiNoAuth.userSignup(user.username, user.password);
+
+    let data;
+    const methods = [apiNoAuth.dirMkdir, apiNoAuth.dirRmdir, apiNoAuth.dirLs, apiNoAuth.dirStat];
+    for (let method of methods) {
+        try {
+            await method.call(apiNoAuth, dirName);
+            expect(true).toBe(false);
+        } catch (e) {
+            const data = e.response.data;
+            expect(data.code).toBe(400);
+            expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+        }
+    }
+
+    data = (await apiAuth.userLogin(user.username, user.password)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('user logged-in successfully');
+
+    data = (await apiAuth.podNew(podName, user.password)).data;
+    expect(data.code).toBe(201);
+    expect(data.message).toBe('pod created successfully');
+
+    data = (await apiAuth.dirLs(podName)).data;
+    expect(JSON.stringify(data)).toBe('{}');
+
+    data = (await apiAuth.dirMkdir(podName, dirFullPath)).data;
+    expect(data.code).toBe(201);
+    expect(data.message).toBe('directory created successfully');
+
+    data = (await apiAuth.dirLs(podName)).data;
+    expect(data.dirs).toHaveLength(1);
+    expect(data.dirs[0].name).toEqual(dirName);
+    expect(data.dirs[0].content_type).toEqual('inode/directory');
+
+    data = (await apiAuth.dirStat(podName, dirName, '/')).data;
+    expect(data.pod_name).toEqual(podName);
+    expect(data.dir_path).toEqual('');
+    expect(data.dir_name).toEqual('/');
+
+    data = (await apiAuth.dirRmdir(podName, dirFullPath)).data;
+    expect(data.code).toEqual(200);
+    expect(data.message).toEqual('directory removed successfully');
+});

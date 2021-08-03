@@ -37,6 +37,15 @@ module.exports.fakeUsers = {
         address: '0x946902a0E525905FbD447c0E13ba6a2179af8712',
         podName: 'Hello-world'
     },
+    dirUser: {
+        username: 'diruser',
+        password: 'somepassworddiruser',
+        mnemonic: 'hole three boat fly swear bundle mystery jealous season rib kidney jacket',
+        address: '0x167bf56Dc2F57EbC950C1d2Dd11d14aE8084d781',
+        podName: 'PodDirTest',
+        dirName: 'mySuperDir',
+        dirFullPath: '/mySuperDir'
+    },
 };
 
 module.exports.uuid = () => {
