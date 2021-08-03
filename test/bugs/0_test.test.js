@@ -1,7 +1,6 @@
 const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser} = require("../utils");
 
 test('Pod stat', async () => {
-    // todo recheck. changed POST to GET
     // const user = getRandomUser();
     // const podName = getRandomPodName();
     const user = fakeUsers.podUser;

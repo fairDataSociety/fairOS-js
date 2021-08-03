@@ -302,7 +302,17 @@ test('Pod stat', async () => {
     const user = fakeUsers.podUser;
     const podName = fakeUsers.podUser.podName;
 
-    let data = (await apiAuth.userLogin(user.username, user.password)).data;
+    let data;
+    try {
+        await apiNoAuth.podStat(podName);
+        expect(true).toBe(false);
+    } catch (e) {
+        const data = e.response.data;
+        expect(data.code).toBe(400);
+        expect(data.message).toBe('cookie: invalid cookie: http: named cookie not present');
+    }
+
+    data = (await apiAuth.userLogin(user.username, user.password)).data;
     expect(data.code).toBe(200);
     expect(data.message).toBe('user logged-in successfully');
 
