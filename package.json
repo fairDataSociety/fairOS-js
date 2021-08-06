@@ -29,5 +29,10 @@
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
+  },
+  "dependencies": {
+    "form-data-encoder": "^1.4.0",
+    "formdata-node": "^3.6.3",
+    "stream": "^0.0.2"
   }
 }

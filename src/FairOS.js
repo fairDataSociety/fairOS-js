@@ -1,17 +1,9 @@
-import axios from "axios";
+import axios from 'axios';
+import {Encoder} from 'form-data-encoder';
+import {Readable} from 'stream';
 // todo progress upload/download support
 // todo supported platforms: browser, node, react, react native
 // todo self-documented code with possibility to create docs page
-
-/*
-POST -F -H "fairOS-dfs-Compression: snappy/gzip" 'pod_dir=\<dir_with_path>' -F 'block_size=\<in_Mb>' -F 'files=@\<filename1>' -F 'files=@\<filename2>' http://localhost:9090/v0/file/upload (compression header optional)
-POST -F 'file=\<file_path>' http://localhost:9090/v0/file/download
-POST -F 'file=\<file_path>' -F 'to=\<destination_user_address>' http://localhost:9090/v0/file/share
-POST -F 'ref=\<sharing_reference>' -F 'dir=\<pod_dir_to_store_file>' http://localhost:9090/v0/file/share/receive
-POST -F 'ref=\<sharing_reference>' http://localhost:9090/v0/file/share/receiveinfo
-GET -F 'file=\<file_path>' http://localhost:9090/v0/file/stat
-DELETE -F 'file=\<file_path>' http://localhost:9090/v0/file/delete
- */
 
 /*
 POST -F 'file=\<kv table name>' http://localhost:9090/v0/kv/new
@@ -103,6 +95,20 @@ export default class FairOS {
         }).then(response => this.handleCookies(response));
     }
 
+    download(apiMethod, data = {}) {
+        return axios({
+            responseType: 'arraybuffer',
+            baseURL: this.baseURL,
+            url: apiMethod,
+            method: 'POST',
+            data,
+            headers: {
+                'Cookie': this.cookie
+            },
+            withCredentials: true,
+        }).then(response => this.handleCookies(response));
+    }
+
     delete(apiMethod, data = {}) {
         return axios({
             baseURL: this.baseURL,
@@ -112,6 +118,23 @@ export default class FairOS {
             headers: {
                 'Content-Type': 'application/json',
                 'Cookie': this.cookie
+            },
+            withCredentials: true,
+        }).then(response => this.handleCookies(response));
+    }
+
+    upload(apiMethod, formData) {
+        // todo if node then add headers, if not - not add
+        // todo check for node and for browser
+        const encoder = new Encoder(formData);
+        return axios({
+            baseURL: this.baseURL,
+            url: apiMethod,
+            method: 'POST',
+            data: Readable.from(encoder.encode()),
+            headers: {
+                'Cookie': this.cookie,
+                ...encoder.headers
             },
             withCredentials: true,
         }).then(response => this.handleCookies(response));
@@ -231,6 +254,47 @@ export default class FairOS {
 
     dirStat(podName, dir, dirFullPath) {
         return this.get(`dir/stat?dir=${dir}&pod_name=${podName}&dir_path=${dirFullPath}`);
+    }
+
+    fileUpload(podName, podDirFull, formData, blockSize = '1Mb') {
+        // todo validate if .set works for browsers
+        // todo implement -H "fairOS-dfs-Compression: snappy/gzip"
+        formData.set('pod_name', podName);
+        formData.set('block_size', blockSize);
+        formData.set('dir_path', podDirFull);
+
+        return this.upload('file/upload', formData);
+    }
+
+    fileDownload(podName, filePath, file) {
+        return this.download(`file/download?file_path=${filePath}&file=${file}&pod_name=${podName}`);
+    }
+
+    fileStat(podName, file) {
+        return this.get(`file/stat?pod_name=${podName}&file_path=${file}`);
+    }
+
+    fileShare(podName, filePath, toAddress) {
+        return this.post('file/share', {
+            pod_name: podName,
+            file_path: filePath,
+            dest_user: toAddress
+        });
+    }
+
+    fileReceiveInfo(podName, fileReference) {
+        return this.get(`file/receiveinfo?pod_name=${podName}&sharing_ref=${fileReference}`);
+    }
+
+    fileReceive(podName, fileReference, dirPath = '/') {
+        return this.get(`file/receive?pod_name=${podName}&sharing_ref=${fileReference}&dir_path=${dirPath}`);
+    }
+
+    fileDelete(podName, filePath) {
+        return this.delete('file/delete', {
+            pod_name: podName,
+            file_path: filePath
+        });
     }
 
     test() {

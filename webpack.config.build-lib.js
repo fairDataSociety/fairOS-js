@@ -32,6 +32,12 @@ module.exports = (env, argv) => {
                 commonjs2: 'axios',
                 amd: 'axios',
                 root: 'axios'
+            },
+            stream: {
+                commonjs: 'stream',
+                commonjs2: 'stream',
+                amd: 'stream',
+                root: 'stream'
             }
         },
         optimization: {
