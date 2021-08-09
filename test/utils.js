@@ -73,3 +73,8 @@ module.exports.getRandomUser = () => {
         password: module.exports.uuid()
     };
 };
+
+module.exports.toBase64 = (data) => {
+    let buff = Buffer.from(data);
+    return buff.toString('base64');
+};

@@ -2,16 +2,15 @@ const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser, toBase64}
 import {FormData, File, fileFromPathSync} from 'formdata-node';
 import fs from 'fs';
 
-test('Kv manage', async () => {
+test('Kv count crash', async () => {
     const user = getRandomUser();
     console.log(user);
     const podName = getRandomPodName();
     // const randomPodName = getRandomPodName();
     // const user = fakeUsers.dirUser;
     // const podName = fakeUsers.dirUser.podName;
-    const csvFileName = `test/files/1.csv`;
+    const csvFileName = `test/files/1_crash.csv`;
     const kvName = 'my_test_kv';
-    const kvNameCsv = 'my_test_kv_csv';
     const kvNameNotFound = 'my_test_kv_not_found';
     const kvKey = 'my_great_key';
     const kvValue = 'my super value';
@@ -36,13 +35,6 @@ test('Kv manage', async () => {
     data = (await apiAuth.kvNew(podName, kvName)).data;
     expect(data.code).toBe(200);
     expect(data.message).toBe('kv store created');
-
-    data = (await apiAuth.kvNew(podName, kvNameCsv)).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('kv store created');
-
-    data = (await apiAuth.kvLs(podName)).data;
-    expect(data.Tables).toHaveLength(2);
 
     try {
         await apiAuth.kvOpen(podName, kvNameNotFound);
@@ -81,43 +73,13 @@ test('Kv manage', async () => {
     expect(data.code).toBe(200);
     expect(data.message).toBe('key deleted');
 
-    data = (await apiAuth.kvOpen(podName, kvNameCsv)).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('kv store opened');
-
-    const formData = new FormData();
-    formData.set('csv', fileFromPathSync(csvFileName));
-    data = (await apiAuth.kvLoadCsv(podName, kvNameCsv, formData)).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe(`csv file loaded in to kv table (${kvNameCsv}) with total:4, success: 4, failure: 0 rows`);
-
-    data = (await apiAuth.kvEntryGet(podName, kvNameCsv, "key_1")).data;
-    expect(data.keys).toHaveLength(2);
-    expect(data.keys[0]).toBe('Key');
-    expect(data.keys[1]).toBe('Value');
-    expect(data.values).toBe(toBase64('key_1,"very_simple_value"'));
-
-    data = (await apiAuth.kvSeek(podName, kvNameCsv, "key_", "", "100")).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('seeked closest to the start key');
-
-    data = (await apiAuth.kvSeekNext(podName, kvNameCsv)).data;
-    expect(data.keys).toHaveLength(2);
-    expect(data.keys[0]).toBe('Key');
-    expect(data.keys[1]).toBe('Value');
-    expect(data.values).toBe(toBase64('key_1,"very_simple_value"'));
-
-    data = (await apiAuth.kvDelete(podName, kvNameCsv)).data;
-    expect(data.code).toBe(200);
-    expect(data.message).toBe('kv store deleted');
-
-    data = (await apiAuth.kvLs(podName)).data;
-    expect(data.Tables).toHaveLength(1);
-
     try {
-        // data = (await apiAuth.kvDelete(podName, kvNameCsv)).data;
-        // console.log('data', data);
+        const formData = new FormData();
+        formData.set('csv', fileFromPathSync(csvFileName));
+        data = (await apiAuth.kvLoadCsv(podName, kvName, formData)).data;
+        console.log('data', data);
 
+        data = (await apiAuth.kvCount(podName, kvName)).data;
     } catch (e) {
         console.log(e);
     }

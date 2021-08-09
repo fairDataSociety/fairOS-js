@@ -6,20 +6,6 @@ import {Readable} from 'stream';
 // todo self-documented code with possibility to create docs page
 
 /*
-POST -F 'file=\<kv table name>' http://localhost:9090/v0/kv/new
-POST -F 'file=\<kv table name>' http://localhost:9090/v0/kv/open
-POST -F 'file=\<kv table name>' http://localhost:9090/v0/kv/count
-POST http://localhost:9090/v0/kv/ls
-DELETE -F 'file=\<kv table name>' http://localhost:9090/v0/kv/delete
-POST -F 'file=\<kv table name>' -F 'key=\<key>' -F 'value=\<bytes>' http://localhost:9090/v0/kv/entry/put
-GET -F 'file=\<kv table name>' -F 'key=\<key>' http://localhost:9090/v0/kv/entry/get
-DELETE -F 'file=\<kv table name>' -F 'key=\<key>' http://localhost:9090/v0/kv/entry/del
-POST -F 'file=\<kv table name>' -F 'csv=@\<csv_file>' http://localhost:9090/v0/kv/loadcsv
-POST -F 'file=\<kv table name>' -F 'start=\<start_prefix>' -F 'end=\<end>' -F 'limit=\<no of records>' http://localhost:9090/v0/kv/seek
-GET -F 'file=\<nkv table ame>' http://localhost:9090/v0/kv/seek/getnext
- */
-
-/*
 POST -F 'name=\<document table name>' http://localhost:9090/v0/doc/new
 POST -F 'name=\<document table name>' http://localhost:9090/v0/doc/open
 POST -F 'name=\<tdocument able name>' -F 'expr=\<expression>' http://localhost:9090/v0/doc/count
@@ -67,12 +53,11 @@ export default class FairOS {
         return response;
     }
 
-    get(apiMethod, data = {}) {
+    get(apiMethod) {
         return axios({
             baseURL: this.baseURL,
             url: apiMethod,
             method: 'GET',
-            data,
             headers: {
                 'Content-Type': 'application/json',
                 'Cookie': this.cookie
@@ -295,6 +280,81 @@ export default class FairOS {
             pod_name: podName,
             file_path: filePath
         });
+    }
+
+    kvNew(podName, tableName) {
+        return this.post('kv/new', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    kvOpen(podName, tableName) {
+        return this.post('kv/open', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    kvCount(podName, tableName) {
+        return this.post('kv/count', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    kvLs(podName) {
+        return this.get(`kv/ls?pod_name=${podName}`);
+    }
+
+    kvDelete(podName, tableName) {
+        return this.delete('kv/delete', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    kvEntryPut(podName, tableName, key, value) {
+        return this.post('kv/entry/put', {
+            pod_name: podName,
+            table_name: tableName,
+            key,
+            value
+        });
+    }
+
+    kvEntryGet(podName, tableName, key) {
+        return this.get(`kv/entry/get?pod_name=${podName}&table_name=${tableName}&key=${key}`);
+    }
+
+    kvEntryDelete(podName, tableName, key) {
+        return this.delete('kv/entry/del', {
+            pod_name: podName,
+            table_name: tableName,
+            key
+        });
+    }
+
+    kvLoadCsv(podName, tableName, formData) {
+        // todo validate if .set works for browsers
+        formData.set('pod_name', podName);
+        formData.set('table_name', tableName);
+
+        return this.upload('kv/loadcsv', formData);
+    }
+
+    kvSeek(podName, tableName, startPrefix, endPrefix, limit) {
+        return this.post('kv/seek', {
+            pod_name: podName,
+            table_name: tableName,
+            start_prefix: startPrefix,
+            end_prefix: endPrefix,
+            limit
+        });
+    }
+
+    kvSeekNext(podName, tableName) {
+        return this.get(`kv/seek/next?pod_name=${podName}&table_name=${tableName}`);
     }
 
     test() {
