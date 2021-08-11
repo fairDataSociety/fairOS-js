@@ -2,19 +2,20 @@ const {fakeUsers, apiAuth, apiNoAuth, getRandomPodName, getRandomUser, toBase64}
 import {FormData, File, fileFromPathSync} from 'formdata-node';
 import fs from 'fs';
 
-test('Kv manage', async () => {
+test('Doc manage', async () => {
     const user = getRandomUser();
-    console.log(user);
+    // console.log(user);
     const podName = getRandomPodName();
     // const randomPodName = getRandomPodName();
     // const user = fakeUsers.dirUser;
     // const podName = fakeUsers.dirUser.podName;
-    const csvFileName = `test/files/1.csv`;
-    const kvName = 'my_test_kv';
-    const kvNameCsv = 'my_test_kv_csv';
-    const kvNameNotFound = 'my_test_kv_not_found';
-    const kvKey = 'my_great_key';
-    const kvValue = 'my super value';
+    // const csvFileName = `test/files/1.csv`;
+    // const kvName = 'my_test_kv';
+    // const kvNameCsv = 'my_test_kv_csv';
+    // const kvNameNotFound = 'my_test_kv_not_found';
+    // const kvKey = 'my_great_key';
+    // const kvValue = 'my super value';
+    const docName = 'my_doc';
 
     await apiNoAuth.userSignup(user.username, user.password);
 
@@ -30,6 +31,40 @@ test('Kv manage', async () => {
     await apiAuth.userLogin(user.username, user.password);
     await apiAuth.podOpen(podName, user.password);
 
+    try {
+        await apiAuth.docOpen(podName, docName);
+    } catch (e) {
+        const data = e.response.data;
+        expect(data.code).toBe(500);
+        expect(data.message).toBe('doc open: document db  not present');
+    }
+
+    data = (await apiAuth.docNew(podName, docName)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('document db created');
+
+    data = (await apiAuth.docOpen(podName, docName)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('document store opened');
+
+    data = (await apiAuth.docCount(podName, docName)).data;
+    expect(data.code).toBe(200);
+    expect(data.message).toBe('0');
+
+
+    try {
+        data = (await apiAuth.docCount(podName, docName)).data;
+        console.log(data);
+
+    } catch (e) {
+        console.log(e);
+    }
+
+
+    // data = (await apiAuth.docNew(podName, docName)).data;
+    // console.log(data);
+
+    return;
     data = (await apiAuth.kvLs(podName)).data;
     expect(data.Tables).toBe(null);
 

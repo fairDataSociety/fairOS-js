@@ -5,20 +5,6 @@ import {Readable} from 'stream';
 // todo supported platforms: browser, node, react, react native
 // todo self-documented code with possibility to create docs page
 
-/*
-POST -F 'name=\<document table name>' http://localhost:9090/v0/doc/new
-POST -F 'name=\<document table name>' http://localhost:9090/v0/doc/open
-POST -F 'name=\<tdocument able name>' -F 'expr=\<expression>' http://localhost:9090/v0/doc/count
-POST -F 'name=\<document table name>' -F 'expr=\<expression>' -F 'limit=\<no of records>' http://localhost:9090/v0/doc/find
-POST http://localhost:9090/v0/doc/ls
-DELETE -F 'name=\<tdocument able name>' http://localhost:9090/v0/doc/delete
-POST -F 'name=\<tdocument able name>' -F 'doc=\<json document in bytes>' http://localhost:9090/v0/doc/entry/put
-GET -F 'name=\<document table name>' -F 'id=\<document id>' http://localhost:9090/v0/doc/entry/get
-DELETE -F 'name=\<document table name>' -F 'id=\<document id>' http://localhost:9090/v0/doc/entry/del
-POST -F 'name=\<document table name>' -F 'json=@\<json_file>' http://localhost:9090/v0/doc/loadjson
-POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:9090/v0/doc/indexjson
- */
-
 export default class FairOS {
     isNode = typeof window === 'undefined';
 
@@ -248,6 +234,7 @@ export default class FairOS {
         formData.set('block_size', blockSize);
         formData.set('dir_path', podDirFull);
 
+        // todo check is file added to formdata
         return this.upload('file/upload', formData);
     }
 
@@ -340,6 +327,7 @@ export default class FairOS {
         formData.set('pod_name', podName);
         formData.set('table_name', tableName);
 
+        // todo check is file added to formdata
         return this.upload('kv/loadcsv', formData);
     }
 
@@ -355,6 +343,96 @@ export default class FairOS {
 
     kvSeekNext(podName, tableName) {
         return this.get(`kv/seek/next?pod_name=${podName}&table_name=${tableName}`);
+    }
+
+    /*
+POST -F 'name=\<document table name>' http://localhost:9090/v0/doc/new
+POST -F 'name=\<document table name>' http://localhost:9090/v0/doc/open
+POST -F 'name=\<tdocument able name>' -F 'expr=\<expression>' http://localhost:9090/v0/doc/count
+POST -F 'name=\<document table name>' -F 'expr=\<expression>' -F 'limit=\<no of records>' http://localhost:9090/v0/doc/find
+POST http://localhost:9090/v0/doc/ls
+DELETE -F 'name=\<tdocument able name>' http://localhost:9090/v0/doc/delete
+POST -F 'name=\<tdocument able name>' -F 'doc=\<json document in bytes>' http://localhost:9090/v0/doc/entry/put
+GET -F 'name=\<document table name>' -F 'id=\<document id>' http://localhost:9090/v0/doc/entry/get
+DELETE -F 'name=\<document table name>' -F 'id=\<document id>' http://localhost:9090/v0/doc/entry/del
+POST -F 'name=\<document table name>' -F 'json=@\<json_file>' http://localhost:9090/v0/doc/loadjson
+POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:9090/v0/doc/indexjson
+ */
+
+    docNew(podName, tableName) {
+        return this.post('doc/new', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    docOpen(podName, tableName) {
+        return this.post('doc/open', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    docCount(podName, tableName) {
+        return this.post('doc/count', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    docFind(podName, tableName, expr, limit = 10) {
+        return this.get(`doc/find?pod_name=${podName}&table_name=${tableName}&expr=${expr}&limit=${limit}`);
+    }
+
+    docLs(podName) {
+        // todo fix it https://github.com/fairDataSociety/fairOS-dfs/issues/97
+        // return this.get(`doc/ls`);
+        return this.get(`doc/ls?pod_name=${podName}`);
+    }
+
+    docDelete(podName, tableName) {
+        return this.delete('user/delete', {
+            pod_name: podName,
+            table_name: tableName
+        });
+    }
+
+    docEntryPut(podName, tableName, doc) {
+        return this.post('doc/entry/put', {
+            pod_name: podName,
+            table_name: tableName,
+            doc
+        });
+    }
+
+    docEntryGet(podName, tableName, id) {
+        return this.get(`doc/entry/get?pod_name=${podName}&table_name=${tableName}&id=${id}`);
+    }
+
+    docEntryDelete(podName, tableName, id) {
+        return this.delete('doc/entry/del', {
+            pod_name: podName,
+            table_name: tableName,
+            id
+        });
+    }
+
+    docLoadJson(podName, tableName, formData) {
+        // todo check is file added to formdata
+        // todo validate if .set works for browsers
+        formData.set('pod_name', podName);
+        formData.set('table_name', tableName);
+
+        return this.upload('doc/loadjson', formData);
+    }
+
+    docIndexJson(podName, tableName, formData) {
+        // todo check is file added to formdata
+        // todo validate if .set works for browsers
+        formData.set('pod_name', podName);
+        formData.set('table_name', tableName);
+
+        return this.upload('doc/indexjson', formData);
     }
 
     test() {
