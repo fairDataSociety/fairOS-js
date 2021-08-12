@@ -11,7 +11,7 @@ services:
       - "${DEBUG_API_ADDR:-127.0.0.1:1635}${BEE_DEBUG_API_ADDR:-:1635}"
     volumes:
       - /home/pi/api-test/bee-docker-data:/home/bee/.bee
-    command: start
+    command: start --config /home/bee/.bee/bee.yaml
 
   fairos:
     image: fairdatasociety/fairos-dfs:0.6.2
@@ -20,7 +20,7 @@ services:
       - '9090:9090'
     volumes:
       - /home/pi/api-test/dfs-docker-data:/root/.fairOS/dfs
-    command: server --cors-origins "http://localhost:3000,http://localhost:1633,http://localhost:1635" --beeHost "bee-1" --cookieDomain "raspberrypi.local"
+    command: server --postageBlockId "" --cors-origins "http://localhost:3000,http://localhost:1633,http://localhost:1635" --beeHost "bee-1" --cookieDomain "raspberrypi.local"
 
     depends_on:
       - bee-1
