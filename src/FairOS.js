@@ -359,10 +359,12 @@ POST -F 'name=\<document table name>' -F 'json=@\<json_file>' http://localhost:9
 POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:9090/v0/doc/indexjson
  */
 
-    docNew(podName, tableName) {
+    docNew(podName, tableName, simpleIndex, mutable = true) {
         return this.post('doc/new', {
             pod_name: podName,
-            table_name: tableName
+            table_name: tableName,
+            si: simpleIndex,
+            mutable: mutable.toString()
         });
     }
 
@@ -391,7 +393,7 @@ POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:909
     }
 
     docDelete(podName, tableName) {
-        return this.delete('user/delete', {
+        return this.delete('doc/delete', {
             pod_name: podName,
             table_name: tableName
         });
