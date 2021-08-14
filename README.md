@@ -70,7 +70,7 @@ sudo docker run \
 start \
 --password=IKGV7tyf76F \
 --cache-capacity 3000000 \
---swap-endpoint https://goerli.infura.io/v3/357ce0ddb3ef426ba0bc727a3c64c873 \
+--swap-endpoint https://goerli.infura.io/v3/YOUR_KEY \
 --debug-api-enable
 ```
 
