@@ -22,10 +22,10 @@ const pod = 'mypod';
 const fairos = new FairOS('http://localhost:9090/v1/');
 
 async function run() {
-    (await fairos.userSignup(username, password)).data;
+    let data = (await fairos.userSignup(username, password)).data;
     console.log('userSignup response', data);
     
-    (await fairos.podNew(pod, password)).data;
+    data = (await fairos.podNew(pod, password)).data;
     console.log('podNew response', data);
 
     const formData = new FormData();
