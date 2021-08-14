@@ -1,8 +1,6 @@
 import axios from 'axios';
 import {Encoder} from 'form-data-encoder';
 import {Readable} from 'stream';
-// todo progress upload/download support
-// todo supported platforms: browser, node, react, react native
 // todo self-documented code with possibility to create docs page
 
 export default class FairOS {
@@ -39,6 +37,10 @@ export default class FairOS {
         return response;
     }
 
+    getCookieObject() {
+        return this.isNode ? {'Cookie': this.cookie} : {};
+    }
+
     get(apiMethod) {
         return axios({
             baseURL: this.baseURL,
@@ -46,7 +48,7 @@ export default class FairOS {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Cookie': this.cookie
+                ...this.getCookieObject()
             },
             withCredentials: true,
         }).then(response => this.handleCookies(response));
@@ -60,13 +62,13 @@ export default class FairOS {
             data,
             headers: {
                 'Content-Type': 'application/json',
-                'Cookie': this.cookie
+                ...this.getCookieObject()
             },
             withCredentials: true,
         }).then(response => this.handleCookies(response));
     }
 
-    download(apiMethod, data = {}) {
+    download(apiMethod, data = {}, onDownloadProgress = null) {
         return axios({
             responseType: 'arraybuffer',
             baseURL: this.baseURL,
@@ -74,9 +76,10 @@ export default class FairOS {
             method: 'POST',
             data,
             headers: {
-                'Cookie': this.cookie
+                ...this.getCookieObject()
             },
             withCredentials: true,
+            onDownloadProgress
         }).then(response => this.handleCookies(response));
     }
 
@@ -88,13 +91,13 @@ export default class FairOS {
             data,
             headers: {
                 'Content-Type': 'application/json',
-                'Cookie': this.cookie
+                ...this.getCookieObject()
             },
             withCredentials: true,
         }).then(response => this.handleCookies(response));
     }
 
-    upload(apiMethod, formData) {
+    upload(apiMethod, formData, onUploadProgress = null) {
         // todo if node then add headers, if not - not add
         // todo check for node and for browser
         const encoder = new Encoder(formData);
@@ -102,12 +105,13 @@ export default class FairOS {
             baseURL: this.baseURL,
             url: apiMethod,
             method: 'POST',
-            data: Readable.from(encoder.encode()),
+            data: this.isNode ? Readable.from(encoder.encode()) : formData,
             headers: {
-                'Cookie': this.cookie,
-                ...encoder.headers
+                ...this.getCookieObject(),
+                ...(this.isNode ? encoder.headers : {})
             },
             withCredentials: true,
+            onUploadProgress
         }).then(response => this.handleCookies(response));
     }
 
@@ -205,6 +209,21 @@ export default class FairOS {
         return this.get(`pod/stat?pod_name=${podName}`);
     }
 
+    podShare(podName, password) {
+        return this.post('pod/share', {
+            pod_name: podName,
+            password
+        });
+    }
+
+    podReceiveInfo(sharingRef) {
+        return this.get(`pod/receiveinfo?sharing_ref=${sharingRef}`);
+    }
+
+    podReceive(sharingRef) {
+        return this.get(`pod/receive?sharing_ref=${sharingRef}`);
+    }
+
     dirMkdir(podName, dirFullPath) {
         return this.post('dir/mkdir', {
             dir_path: dirFullPath,
@@ -227,19 +246,21 @@ export default class FairOS {
         return this.get(`dir/stat?dir=${dir}&pod_name=${podName}&dir_path=${dirFullPath}`);
     }
 
-    fileUpload(podName, podDirFull, formData, blockSize = '1Mb') {
-        // todo validate if .set works for browsers
+    fileUpload(podName, podDirFull, formData, blockSize = '1Mb', onUploadProgress = null) {
+        if (!formData.has('files')) {
+            throw new Error('Field "files" is not defined');
+        }
+
         // todo implement -H "fairOS-dfs-Compression: snappy/gzip"
         formData.set('pod_name', podName);
         formData.set('block_size', blockSize);
         formData.set('dir_path', podDirFull);
 
-        // todo check is file added to formdata
-        return this.upload('file/upload', formData);
+        return this.upload('file/upload', formData, onUploadProgress);
     }
 
-    fileDownload(podName, filePath, file) {
-        return this.download(`file/download?file_path=${filePath}&file=${file}&pod_name=${podName}`);
+    fileDownload(podName, filePath, file, onDownloadProgress = null) {
+        return this.download(`file/download?file_path=${filePath}&file=${file}&pod_name=${podName}`, {}, onDownloadProgress);
     }
 
     fileStat(podName, file) {
@@ -323,11 +344,13 @@ export default class FairOS {
     }
 
     kvLoadCsv(podName, tableName, formData) {
-        // todo validate if .set works for browsers
+        if (!formData.has('csv')) {
+            throw new Error('Field "csv" is not defined');
+        }
+
         formData.set('pod_name', podName);
         formData.set('table_name', tableName);
 
-        // todo check is file added to formdata
         return this.upload('kv/loadcsv', formData);
     }
 
@@ -420,8 +443,10 @@ POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:909
     }
 
     docLoadJson(podName, tableName, formData) {
-        // todo check is file added to formdata
-        // todo validate if .set works for browsers
+        if (!formData.has('json')) {
+            throw new Error('Field "json" is not defined');
+        }
+
         formData.set('pod_name', podName);
         formData.set('table_name', tableName);
 
@@ -429,8 +454,10 @@ POST -F 'name=\<document table name>' -F 'file=\<pod file>' http://localhost:909
     }
 
     docIndexJson(podName, tableName, formData) {
-        // todo check is file added to formdata
-        // todo validate if .set works for browsers
+        if (!formData.has('json')) {
+            throw new Error('Field "json" is not defined');
+        }
+
         formData.set('pod_name', podName);
         formData.set('table_name', tableName);
 

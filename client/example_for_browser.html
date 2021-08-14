@@ -6,11 +6,86 @@
 </head>
 <body>
 <h3>Use library directly with &lt;script&gt; tag</h3>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<p>Test response: <span id="test-response"></span></p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+        integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="../fairos.min.js"></script>
 <script>
-    const fairos = new FairOS();
-    document.write(fairos.test());
+    const uuid = () => {
+        return 'xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
+    const getRandomUser = () => {
+        return {
+            username: uuid(),
+            password: uuid()
+        };
+    };
+
+    const getRandomBytes = (
+        (typeof self !== 'undefined' && (self.crypto || self.msCrypto))
+            ? function () { // Browsers
+                var crypto = (self.crypto || self.msCrypto), QUOTA = 65536;
+                return function (n) {
+                    var a = new Uint8Array(n);
+                    for (var i = 0; i < n; i += QUOTA) {
+                        crypto.getRandomValues(a.subarray(i, i + Math.min(n - i, QUOTA)));
+                    }
+                    return a;
+                };
+            }
+            : function () { // Node
+                return require("crypto").randomBytes;
+            }
+    )();
+
+    const fairos = new FairOS('http://localhost:9090/v1/');
+
+    async function test() {
+        const user = getRandomUser();
+        console.log(user);
+        const pod = 'Hello-world';
+
+        document.querySelector('#test-response').innerHTML = fairos.test();
+        let response = await fairos.userSignup(user.username, user.password);
+        console.log('userSignup', response);
+
+        response = await fairos.podNew(pod, user.password);
+        console.log('podNew', response);
+
+        response = await fairos.userLogin(user.username, user.password);
+        console.log('userLogin', response);
+
+        response = await fairos.podOpen(pod, user.password);
+        console.log('podOpen', response);
+
+        // const formData = new FormData();
+        // formData.append('files', new File(['Hello world'], '1.txt'));
+        // response = await fairos.fileUpload(pod, '/', formData);
+        // console.log('fileUpload', response);
+
+        const formData = new FormData();
+        formData.append('files', new File([new Blob([getRandomBytes(1048576 * 20)])], '1.bin'));
+        // TODO UPLOAD progress only for browser. handle it
+        // todo seems like fairos not handle upload progress
+        response = await fairos.fileUpload(pod, '/', formData, '1Mb', percent => {
+            console.log('percent upload', percent.loaded);
+        });
+        console.log('fileUpload', response);
+
+        response = await fairos.fileDownload(pod, '/1.bin', '1.bin', percent => {
+            console.log('percent download', percent);
+        });
+        console.log('fileDownload', response);
+    }
+
+    test().then();
 </script>
 </body>
 </html>

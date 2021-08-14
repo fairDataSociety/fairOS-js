@@ -1,6 +1,48 @@
 # FairOS-js
 
-Library for direct interaction with FairOS API.
+Library for interaction with FairOS API. Works in the browser and on Node.js.
+
+### How to start using in browser?
+
+FairOS-js depends on Axios lib, but not contain it inside. So you should add Axios before using.
+
+```
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+        integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+<script src="fairos.min.js"></script>
+```
+
+```js
+const username = 'admin';
+const password = 'admin';
+const pod = 'mypod';
+
+const fairos = new FairOS('http://localhost:9090/v1/');
+
+async function run() {
+    (await fairos.userSignup(username, password)).data;
+    console.log('userSignup response', data);
+    
+    (await fairos.podNew(pod, password)).data;
+    console.log('podNew response', data);
+
+    const formData = new FormData();
+    formData.append('files', new File(['Hello world'], '1.txt'));
+    await fairos.fileUpload(pod, '/', formData);
+
+    await fairos.fileDownload(pod, '/1.txt', '1.txt', percent => {
+        console.log('percent download', percent);
+    });
+}
+
+run().then();
+```
+
+### Using examples
+
+You can find examples of using each method of the library in the file `/test/1_user.test.js`
 
 ### Testing
 
