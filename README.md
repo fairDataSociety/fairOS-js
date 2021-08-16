@@ -14,6 +14,14 @@ FairOS-js depends on Axios lib, but not contain it inside. So you should add Axi
 <script src="fairos.min.js"></script>
 ```
 
+To install the lib with package manager you can run:
+
+`yarn add @fairdatasociety/fairos-js`
+
+or
+
+`npm i @fairdatasociety/fairos-js`
+
 ```js
 const username = 'admin';
 const password = 'admin';
