@@ -23,6 +23,8 @@ or
 `npm i @fairdatasociety/fairos-js`
 
 ```js
+const FairOS = require('@fairdatasociety/fairos-js');
+
 const username = 'admin';
 const password = 'admin';
 const pod = 'mypod';
