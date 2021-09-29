@@ -1,6 +1,6 @@
 {
   "name": "@fairdatasociety/fairos-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "fairos.min.js",
   "description": "Library for interacting with FairOS",
   "repository": "https://github.com/fairDataSociety/fairOS-js.git",
