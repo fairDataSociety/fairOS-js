@@ -343,13 +343,14 @@ export default class FairOS {
         });
     }
 
-    kvLoadCsv(podName, tableName, formData) {
+    kvLoadCsv(podName, tableName, formData, memory = true) {
         if (!formData.has('csv')) {
             throw new Error('Field "csv" is not defined');
         }
 
         formData.set('pod_name', podName);
         formData.set('table_name', tableName);
+        formData.set('memory', memory);
 
         return this.upload('kv/loadcsv', formData);
     }

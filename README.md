@@ -94,3 +94,7 @@ Create stamps
 Fill it to docker-compose.yml, then run
 
 `docker-compose down && docker-compose up -d`
+
+Test with non-local version FairOS/Bee
+
+`./test/other/ssh_clean.sh && sleep 15 && yarn test test/1_user.test.js`
