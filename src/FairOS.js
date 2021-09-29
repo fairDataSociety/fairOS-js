@@ -106,6 +106,8 @@ export default class FairOS {
             url: apiMethod,
             method: 'POST',
             data: this.isNode ? Readable.from(encoder.encode()) : formData,
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
             headers: {
                 ...this.getCookieObject(),
                 ...(this.isNode ? encoder.headers : {})
